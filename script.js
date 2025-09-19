@@ -6,6 +6,15 @@ let nextStarter = "X";
 let gameOver = false; // 🚩 control para bloquear tablero
 let winningCells = []; // 🔥 nuevas casillas ganadoras
 
+// 🔊 Sonido para movimientos - Huanmani
+function playMoveSound() {
+    let sound = q("moveSound");
+    if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch(e => console.log("Error reproduciendo sonido:", e));
+    }
+}
+
 const win = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 const q = id => document.getElementById(id);
 
@@ -132,7 +141,9 @@ function move(i) {
 
   q("btnNames").disabled = true;
   board[i] = turn;
-
+  // 🔊 AGREGAR ESTA LÍNEA - Huanmani
+  playMoveSound();
+  
   let r = check();
 
   if (r.over) {
