@@ -310,3 +310,4 @@ function addHistory(text, winnerSymbol) {
 function clearHistory() {
   q("history").innerHTML = "<tr><th>#</th><th>Resultado</th></tr>";
 }
+// Modificado por Huanmani - 25/09/2025
