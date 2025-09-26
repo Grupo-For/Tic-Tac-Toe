@@ -299,3 +299,41 @@ function addHistory(text, winnerSymbol) {
 function clearHistory() {
   q("history").innerHTML = "<tr><th>#</th><th>Resultado</th></tr>";
 }
+
+// --- Extra: Modal para empates ---
+function showDrawModal() {
+  // Solo activar si la partida terminó y fue empate
+  if (gameOver && winningCells.length === 0) {
+    const modal = document.createElement("div");
+    modal.classList.add("modal-draw");
+
+    modal.innerHTML = `
+      <div class="modal-content">
+        <h2>😅 ¡Empate!</h2>
+        <p>Nadie ganó esta vez... ¡inténtenlo de nuevo!</p>
+        <button id="closeDraw">Cerrar</button>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Botón de cerrar
+    document.getElementById("closeDraw").addEventListener("click", () => {
+      modal.remove();
+    });
+
+    // Cierre automático a los 3 segundos (extra ✨)
+    setTimeout(() => {
+      if (document.body.contains(modal)) {
+        modal.remove();
+      }
+    }, 3000);
+  }
+}
+
+// --- Hook para revisar después de cada jugada ---
+const oldDraw = draw; // guardamos la draw original
+draw = function() {
+  oldDraw();      // ejecuta lo normal
+  showDrawModal(); // y luego chequea si hay empate
+};
