@@ -5,6 +5,7 @@ let games = 0;
 let nextStarter = "X";
 let gameOver = false; // 🚩 control para bloquear tablero
 let winningCells = []; // 🔥 nuevas casillas ganadoras
+let timerInterval, seconds = 0;
 
 const win = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 const q = id => document.getElementById(id);
@@ -136,6 +137,7 @@ function move(i) {
   let r = check();
 
   if (r.over) {
+    stopTimer();
     games++;
     gameOver = true;
 
@@ -170,6 +172,20 @@ function check() {
   return board.every(Boolean) ? {over: 1} : {over: 0};
 }
 
+function startTimer() {
+  clearInterval(timerInterval);
+  seconds = 0;
+  q("timer").textContent = "⏱ Tiempo: 0s";
+  timerInterval = setInterval(() => {
+    seconds++;
+    q("timer").textContent = "⏱ Tiempo: " + seconds + "s";
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
 function restart() {
   board = Array(9).fill("");
   gameOver = false;
@@ -179,6 +195,7 @@ function restart() {
   q("turn").textContent = "Turno: " + p[turn] + " (" + turn + ")";
   draw();
   q("btnNames").disabled = false;
+  startTimer();
 }
 
 function resetScore() {
