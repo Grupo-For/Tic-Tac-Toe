@@ -102,3 +102,48 @@ th, td {
   border-radius: 6px;
   cursor: pointer;
 }
+
+#statsModal .modal-content {
+  background: #f4faff;
+  border: 2px solid #0077cc;
+}
+
+/* ----- NUEVAS 20 LÍNEAS ----- */
+
+/* botones generales */
+button {
+  background: #0077cc;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  transition: background 0.3s, transform 0.2s;
+}
+
+button:hover {
+  background: #005fa3;
+  transform: scale(1.05);
+}
+
+/* sombreado en el tablero */
+#board .cell:hover {
+  background: #ddd;
+}
+
+/* estilos del encabezado */
+h1, h2 {
+  color: #0077cc;
+  margin: 10px 0;
+  text-transform: uppercase;
+}
+
+/* animación de ganador */
+@keyframes winner-flash {
+  0% { background: gold; }
+  50% { background: orange; }
+  100% { background: gold; }
+}
+
+.winner {
+  animation: winner-flash 1s infinite;
+}
