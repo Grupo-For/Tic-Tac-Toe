@@ -299,3 +299,20 @@ function addHistory(text, winnerSymbol) {
 function clearHistory() {
   q("history").innerHTML = "<tr><th>#</th><th>Resultado</th></tr>";
 }
+// ---- NUEVA FUNCIÓN ESTADÍSTICAS ----
+function openStats() {
+  let total = games || 1; // evitar división entre 0
+  let porcX = ((score.X / total) * 100).toFixed(1);
+  let porcO = ((score.O / total) * 100).toFixed(1);
+  let porcD = ((score.D / total) * 100).toFixed(1);
+
+  q("statsX").textContent = `${p.X} (${p.symX}): ${score.X} victorias (${porcX}%)`;
+  q("statsO").textContent = `${p.O} (${p.symO}): ${score.O} victorias (${porcO}%)`;
+  q("statsDraws").textContent = `Empates: ${score.D} (${porcD}%)`;
+
+  q("statsModal").style.display = "block";
+}
+
+function closeStats() {
+  q("statsModal").style.display = "none";
+}
