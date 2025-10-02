@@ -9,6 +9,11 @@ let winningCells = [];
 // 🆕 Historial de movimientos para deshacer
 let moveHistory = [];
 
+// Variables para rachas
+let currentStreak = {X: 0, O: 0};
+let bestStreak = {X: 0, O: 0};
+let lastWinner = null;
+
 const win = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 const q = id => document.getElementById(id);
 
@@ -150,11 +155,13 @@ function move(i) {
       score[r.w]++;
       winningCells = r.combo;
       addHistory("Ganó " + p[r.w], r.w);
+      updateStreak(r.w);
     } else {
       q("status").textContent = "Empate";
       score.D++;
       winningCells = [];
       addHistory("Empate", null);
+      updateStreak(null);
     }
 
     nextStarter = nextStarter === "X" ? "O" : "X";
@@ -195,6 +202,27 @@ function updateUndoButton() {
   }
 }
 
+function updateStreak(winner) {
+  if (winner) {
+    if (lastWinner === winner) {
+      currentStreak[winner]++;
+    } else {
+      currentStreak.X = winner === "X" ? 1 : 0;
+      currentStreak.O = winner === "O" ? 1 : 0;
+    }
+    
+    if (currentStreak[winner] > bestStreak[winner]) {
+      bestStreak[winner] = currentStreak[winner];
+    }
+    
+    lastWinner = winner;
+  } else {
+    currentStreak.X = 0;
+    currentStreak.O = 0;
+    lastWinner = null;
+  }
+}
+
 function check() {
   for (let [a, b, c] of win) {
     if (board[a] && board[a] == board[b] && board[a] == board[c]) {
@@ -219,6 +247,9 @@ function restart() {
 function resetScore() {
   score.X = score.O = score.D = 0;
   games = 0;
+  currentStreak.X = currentStreak.O = 0;
+  bestStreak.X = bestStreak.O = 0;
+  lastWinner = null;
   updateScore();
   clearHistory();
   restart();
@@ -337,8 +368,8 @@ function openStats() {
   let porcO = ((score.O / total) * 100).toFixed(1);
   let porcD = ((score.D / total) * 100).toFixed(1);
 
-  q("statsX").textContent = `${p.X} (${p.symX}): ${score.X} victorias (${porcX}%)`;
-  q("statsO").textContent = `${p.O} (${p.symO}): ${score.O} victorias (${porcO}%)`;
+  q("statsX").textContent = `${p.X} (${p.symX}): ${score.X} victorias (${porcX}%)<br>Racha actual: ${currentStreak.X} | Mejor racha: ${bestStreak.X}`;
+  q("statsO").textContent = `${p.O} (${p.symO}): ${score.O} victorias (${porcO}%)<br>Racha actual: ${currentStreak.O} | Mejor racha: ${bestStreak.O}`;
   q("statsDraws").textContent = `Empates: ${score.D} (${porcD}%)`;
 
   q("statsModal").style.display = "block";
