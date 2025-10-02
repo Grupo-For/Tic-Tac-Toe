@@ -102,3 +102,7 @@ th, td {
   border-radius: 6px;
   cursor: pointer;
 }
+#statsModal .modal-content {
+  background: #f4faff;
+  border: 2px solid #0077cc;
+}

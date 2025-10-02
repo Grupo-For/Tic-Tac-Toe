@@ -7,7 +7,6 @@
 </head>
 <body class="start">
     <h1>Tic Tac Toe</h1>
-
     <div id="register">
         <input id="p1" placeholder="Jugador 1 (X)">
         <input id="p2" placeholder="Jugador 2 (O)">
@@ -25,6 +24,9 @@
         <p id="turn"></p>
         <div id="board"></div>
         <p id="status"></p>
+        
+        <!-- 🆕 Botón Deshacer agregado aquí -->
+        <button id="btnUndo" onclick="undoMove()" disabled>⬅️ Deshacer</button>
 
         <h3>Marcador</h3>
         <p>
@@ -41,6 +43,17 @@
         <button onclick="confirmAction('reset')">Reiniciar Marcador</button>
         <button onclick="confirmAction('new')">Nuevo Juego</button>
         <button id="btnNames" onclick="openNameModal()">Cambiar Nombres</button>
+        <button onclick="openStats()">Ver Estadísticas</button>
+
+<div id="statsModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeStats()">×</span>
+    <h3>📊 Estadísticas de Jugadores</h3>
+    <p id="statsX"></p>
+    <p id="statsO"></p>
+    <p id="statsDraws"></p>
+  </div>
+</div>
     </div>
 
     <div id="firstTurnModal" class="modal">

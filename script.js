@@ -3,8 +3,11 @@ let p = {X: "J1", O: "J2"};
 let score = {X: 0, O: 0, D: 0};
 let games = 0;
 let nextStarter = "X";
-let gameOver = false; // 🚩 control para bloquear tablero
-let winningCells = []; // 🔥 nuevas casillas ganadoras
+let gameOver = false;
+let winningCells = [];
+
+// 🆕 Historial de movimientos para deshacer
+let moveHistory = [];
 
 const win = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 const q = id => document.getElementById(id);
@@ -86,10 +89,10 @@ function setFirstTurn(choice) {
     turn = choice;
   }
 
-  nextStarter = turn; // guardamos para alternancia
-  q("firstTurnModal").style.display = "none"; // cerramos modal
-  q("game").style.display = "block"; // vamos al tablero
-  restart(); // inicia la partida con 'turn' elegido
+  nextStarter = turn;
+  q("firstTurnModal").style.display = "none";
+  q("game").style.display = "block";
+  restart();
 }
 
 function draw() {
@@ -98,15 +101,12 @@ function draw() {
     let b = document.createElement("button");
     b.className = "cell";
 
-    // asignar símbolo
     if (v === "X") b.textContent = p.symX;
     if (v === "O") b.textContent = p.symO;
 
-    // aplicar color de jugador
     if (v === "X") b.style.background = q("colorX").value, b.style.color="white";
     if (v === "O") b.style.background = q("colorO").value, b.style.color="white";
 
-    // 🔥 resaltar si está en línea ganadora
     if (winningCells.includes(i)) {
       b.classList.add("winner");
     }
@@ -116,12 +116,14 @@ function draw() {
     q("board").appendChild(b);
   });
 
-  // mostrar turno solo si no terminó la partida
   if (!gameOver) {
     q("turn").textContent = "Turno: " + p[turn] + " (" + turn + ")";
   } else {
     q("turn").textContent = "";
   }
+  
+  // 🆕 Actualizar estado del botón deshacer
+  updateUndoButton();
 }
 
 function move(i) {
@@ -131,6 +133,10 @@ function move(i) {
   }
 
   q("btnNames").disabled = true;
+  
+  // 🆕 Guardar el estado antes del movimiento
+  saveMove(i, turn);
+  
   board[i] = turn;
 
   let r = check();
@@ -142,12 +148,12 @@ function move(i) {
     if (r.w) {
       q("status").textContent = "Ganó " + p[r.w];
       score[r.w]++;
-      winningCells = r.combo; // 🔥 guardar casillas ganadoras
+      winningCells = r.combo;
       addHistory("Ganó " + p[r.w], r.w);
     } else {
       q("status").textContent = "Empate";
       score.D++;
-      winningCells = []; // empate → no hay casillas
+      winningCells = [];
       addHistory("Empate", null);
     }
 
@@ -161,10 +167,38 @@ function move(i) {
   draw();
 }
 
+// 🆕 Función para guardar un movimiento en el historial
+function saveMove(position, player) {
+  moveHistory.push({
+    position: position,
+    player: player,
+    boardState: [...board]
+  });
+}
+
+// 🆕 Función para deshacer el último movimiento
+function undoMove() {
+  if (moveHistory.length === 0 || gameOver) {
+    return;
+  }
+  let lastMove = moveHistory.pop();
+  board = [...lastMove.boardState];
+  turn = lastMove.player;
+  draw();
+}
+
+// 🆕 Función para actualizar el estado del botón deshacer
+function updateUndoButton() {
+  let undoBtn = q("btnUndo");
+  if (undoBtn) {
+    undoBtn.disabled = moveHistory.length === 0 || gameOver;
+  }
+}
+
 function check() {
   for (let [a, b, c] of win) {
     if (board[a] && board[a] == board[b] && board[a] == board[c]) {
-      return {over: 1, w: board[a], combo: [a,b,c]}; // 🔥 devolver también la combinación
+      return {over: 1, w: board[a], combo: [a,b,c]};
     }
   }
   return board.every(Boolean) ? {over: 1} : {over: 0};
@@ -173,7 +207,8 @@ function check() {
 function restart() {
   board = Array(9).fill("");
   gameOver = false;
-  winningCells = []; // 🔥 limpiar al reiniciar
+  winningCells = [];
+  moveHistory = []; // 🆕 Limpiar historial de movimientos
   q("status").textContent = "";
   turn = nextStarter;
   q("turn").textContent = "Turno: " + p[turn] + " (" + turn + ")";
@@ -224,7 +259,7 @@ function saveNames() {
 
   updateScore();
   restart();
-  closeNameModal(); // 🔥 cerrar modal
+  closeNameModal();
 }
 
 function validateMaxLength(p1Symbol, p2Symbol) {
@@ -243,7 +278,6 @@ function setSymbols() {
   let p1Symbol = q("symbolX").value.trim() || "X";
   let p2Symbol = q("symbolO").value.trim() || "O";
 
-  // Primer try/catch → longitud
   try {
     validateMaxLength(p1Symbol, p2Symbol);
   } catch (err) {
@@ -251,7 +285,6 @@ function setSymbols() {
     return false;
   }
 
-  // Segundo try/catch → que no sean iguales
   try {
     validateDifferent(p1Symbol, p2Symbol);
   } catch (err) {
@@ -259,7 +292,6 @@ function setSymbols() {
     return false;
   }
 
-  // Si pasa todas las validaciones → se guardan
   p.symX = p1Symbol;
   p.symO = p2Symbol;
   return true;
@@ -274,7 +306,6 @@ function updateScore() {
   q("n1").textContent = p.X;
   q("n2").textContent = p.O;
 
-  // 🔥 actualizar también turno
   if (!gameOver) {
     q("turn").textContent = "Turno: " + p[turn] + " (" + turn + ")";
   }
@@ -293,9 +324,26 @@ function addHistory(text, winnerSymbol) {
   } else if (winnerSymbol === "O") {
     c1.style.background = q("colorO").value;
   } else {
-    c1.style.background = "#999"; // gris para empate
+    c1.style.background = "#999";
   }
 }
 function clearHistory() {
   q("history").innerHTML = "<tr><th>#</th><th>Resultado</th></tr>";
+}
+// ---- NUEVA FUNCIÓN ESTADÍSTICAS ----
+function openStats() {
+  let total = games || 1; // evitar división entre 0
+  let porcX = ((score.X / total) * 100).toFixed(1);
+  let porcO = ((score.O / total) * 100).toFixed(1);
+  let porcD = ((score.D / total) * 100).toFixed(1);
+
+  q("statsX").textContent = `${p.X} (${p.symX}): ${score.X} victorias (${porcX}%)`;
+  q("statsO").textContent = `${p.O} (${p.symO}): ${score.O} victorias (${porcO}%)`;
+  q("statsDraws").textContent = `Empates: ${score.D} (${porcD}%)`;
+
+  q("statsModal").style.display = "block";
+}
+
+function closeStats() {
+  q("statsModal").style.display = "none";
 }
