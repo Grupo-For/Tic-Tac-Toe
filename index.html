@@ -17,6 +17,14 @@
         <label>Símbolo Jugador 1 (X): <input type="text" id="symbolX" placeholder="X"></label>
         <label>Símbolo Jugador 2 (O): <input type="text" id="symbolO" placeholder="O"></label>
         <br><br>
+        <label>🎨 Tema Visual:</label>
+        <select id="themeSelector" onchange="changeTheme(this.value)">
+            <option value="classic">Clásico</option>
+            <option value="dark">Oscuro</option>
+            <option value="neon">Neón</option>
+            <option value="retro">Retro</option>
+        </select>
+        <br><br>
         <button onclick="start()">Comenzar</button>
     </div>
 

@@ -16,6 +16,11 @@ let lastWinner = null;
 
 const win = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 const q = id => document.getElementById(id);
+// 🆕 ---- Función para cambiar temas ----
+function changeTheme(theme) {
+  document.body.className = document.body.classList.contains('game') ? 'game' : 'start';
+  document.body.classList.add('theme-' + theme);
+}
 
 // ---- Modal confirmaciones ----
 function showModal(msg, buttons=[]) {
@@ -78,6 +83,9 @@ function start() {
   q("game").style.display = "block";
   q("firstTurnModal").style.display = "block";
 
+    // 🆕 Mantener el tema al cambiar de pantalla
+  let currentTheme = q("themeSelector").value;
+  document.body.classList.add('theme-' + currentTheme);
   document.body.className = "game";
 
   score.X = score.O = score.D = 0;
@@ -261,6 +269,9 @@ function newGame() {
   q("p1").value = "";
   q("p2").value = "";
   document.body.className = "start";
+    // 🆕 Mantener el tema al volver al inicio
+  let currentTheme = q("themeSelector").value;
+  document.body.classList.add('theme-' + currentTheme);
 }
 
 // ---- Modal cambiar nombres ----

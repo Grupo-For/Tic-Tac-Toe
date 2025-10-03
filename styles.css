@@ -106,3 +106,116 @@ th, td {
   background: #f4faff;
   border: 2px solid #0077cc;
 }
+
+/* 🆕 ===== TEMAS VISUALES ===== */
+
+/* Tema Clásico (por defecto) */
+body.theme-classic {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #333;
+}
+
+/* Tema Oscuro */
+body.theme-dark {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: #eee;
+}
+body.theme-dark h1, body.theme-dark h3, body.theme-dark p, body.theme-dark label {
+  color: #eee;
+}
+body.theme-dark .cell {
+  background: #0f3460;
+  border-color: #00d4ff;
+  color: #eee;
+}
+body.theme-dark button {
+  background: #e94560;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+body.theme-dark table {
+  color: #eee;
+  border-color: #00d4ff;
+}
+body.theme-dark th, body.theme-dark td {
+  border-color: #00d4ff;
+}
+
+/* Tema Neón */
+body.theme-neon {
+  background: #000;
+  color: #0ff;
+  font-family: 'Courier New', monospace;
+}
+body.theme-neon h1, body.theme-neon h3, body.theme-neon p, body.theme-neon label {
+  color: #0ff;
+  text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+}
+body.theme-neon .cell {
+  background: #111;
+  border: 2px solid #f0f;
+  color: #0ff;
+  box-shadow: 0 0 10px #f0f;
+}
+body.theme-neon button {
+  background: #f0f;
+  color: #000;
+  border: 2px solid #0ff;
+  padding: 8px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  box-shadow: 0 0 10px #f0f;
+}
+body.theme-neon .winner {
+  background: #ff0 !important;
+  color: #000 !important;
+  box-shadow: 0 0 20px #ff0 !important;
+}
+body.theme-neon table {
+  color: #0ff;
+  border-color: #f0f;
+}
+body.theme-neon th, body.theme-neon td {
+  border-color: #f0f;
+}
+
+/* Tema Retro */
+body.theme-retro {
+  background: #f4e4c1;
+  color: #5d4037;
+  font-family: 'Courier New', monospace;
+}
+body.theme-retro h1, body.theme-retro h3 {
+  color: #d84315;
+  text-shadow: 2px 2px #5d4037;
+}
+body.theme-retro .cell {
+  background: #ffecb3;
+  border: 3px solid #8d6e63;
+  color: #5d4037;
+  font-weight: bold;
+}
+body.theme-retro button {
+  background: #ff6f00;
+  color: white;
+  border: 3px solid #5d4037;
+  padding: 8px 15px;
+  cursor: pointer;
+  border-radius: 0;
+  font-weight: bold;
+}
+body.theme-retro .winner {
+  background: #ffd54f !important;
+  color: #5d4037 !important;
+  border: 3px solid #ff6f00 !important;
+}
+body.theme-retro table {
+  color: #5d4037;
+  border: 3px solid #8d6e63;
+}
+body.theme-retro th, body.theme-retro td {
+  border: 2px solid #8d6e63;
+}
