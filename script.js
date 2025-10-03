@@ -155,6 +155,7 @@ function move(i) {
   let r = check();
 
   if (r.over) {
+    stopTimer();
     games++;
     gameOver = true;
 
@@ -240,6 +241,22 @@ function check() {
   return board.every(Boolean) ? {over: 1} : {over: 0};
 }
 
+let timerInterval, seconds = 0;
+
+function startTimer() {
+  clearInterval(timerInterval);
+  seconds = 0;
+  q("timer").textContent = "⏱ Tiempo: 0s";
+  timerInterval = setInterval(() => {
+    seconds++;
+    q("timer").textContent = "⏱ Tiempo: " + seconds + "s";
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
 function restart() {
   board = Array(9).fill("");
   gameOver = false;
@@ -250,6 +267,7 @@ function restart() {
   q("turn").textContent = "Turno: " + p[turn] + " (" + turn + ")";
   draw();
   q("btnNames").disabled = false;
+  startTimer(); 
 }
 
 function resetScore() {
