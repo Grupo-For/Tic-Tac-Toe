@@ -6,6 +6,7 @@ let nextStarter = "X";
 let gameOver = false; // 🚩 control para bloquear tablero
 let winningCells = []; // 🔥 nuevas casillas ganadoras
 let timerInterval, seconds = 0;
+let moveHistory = [];
 
 const win = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 const q = id => document.getElementById(id);
@@ -123,6 +124,7 @@ function draw() {
   } else {
     q("turn").textContent = "";
   }
+  updateUndoButton();
 }
 
 
@@ -134,6 +136,8 @@ function move(i) {
   }
 
   q("btnNames").disabled = true;
+  saveMove(i, turn);
+
   board[i] = turn;
 
   let r = check();
@@ -192,6 +196,8 @@ function restart() {
   board = Array(9).fill("");
   gameOver = false;
   winningCells = []; // 🔥 limpiar al reiniciar
+
+  moveHistory = [];
   q("status").textContent = "";
   turn = nextStarter;
   q("turn").textContent = "Turno: " + p[turn] + " (" + turn + ")";
@@ -317,4 +323,29 @@ function addHistory(text, winnerSymbol) {
 }
 function clearHistory() {
   q("history").innerHTML = "<tr><th>#</th><th>Resultado</th></tr>";
+}
+
+function saveMove(position, player) {
+  moveHistory.push({
+    position: position,
+    player: player,
+    boardState: [...board]
+  });
+}
+
+function undoMove() {
+  if (moveHistory.length === 0 || gameOver) {
+    return;
+  }
+  let lastMove = moveHistory.pop();
+  board = [...lastMove.boardState];
+  turn = lastMove.player;
+  draw();
+}
+
+function updateUndoButton() {
+  let undoBtn = q("btnUndo");
+  if (undoBtn) {
+    undoBtn.disabled = moveHistory.length === 0 || gameOver;
+  }
 }
