@@ -141,3 +141,7 @@ button:disabled {
   color: #666;
   cursor: not-allowed;
 }
+#statsModal .modal-content {
+  background: #f4faff;
+  border: 2px solid #0077cc;
+}
