@@ -102,3 +102,42 @@ th, td {
   border-radius: 6px;
   cursor: pointer;
 }
+/*NUEVO*/
+/* animaciones y mejoras visuales */
+.cell {
+  transition: transform 0.2s, background 0.2s;
+}
+.cell:hover {
+  background: #ddd;
+  transform: scale(1.05);
+}
+.cell:active {
+  transform: scale(0.9);
+}
+
+/* cronómetro */
+#timer {
+  font-weight: bold;
+  color: #16a085;
+  font-size: 1.1em;
+}
+
+/* historial */
+#history tr:nth-child(even) {
+  background: #f2f2f2;
+}
+#history tr:hover {
+  background: #dfe6e9;
+}
+
+/* botones */
+button:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+button:disabled {
+  background: #bbb;
+  color: #666;
+  cursor: not-allowed;
+}
