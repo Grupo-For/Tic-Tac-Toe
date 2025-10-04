@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="start">
+    <h1>Tic Tac Toe</h1>
+
+    <div id="register">
+        <input id="p1" placeholder="Jugador 1 (X)">
+        <input id="p2" placeholder="Jugador 2 (O)">
+        <br><br>
+        <label>Color Jugador 1 (X): <input type="color" id="colorX" value="#ff4d4d"></label>
+        <label>Color Jugador 2 (O): <input type="color" id="colorO" value="#4dff4d"></label>
+        <br><br>
+        <label>Símbolo Jugador 1 (X): <input type="text" id="symbolX" placeholder="X"></label>
+        <label>Símbolo Jugador 2 (O): <input type="text" id="symbolO" placeholder="O"></label>
+        <br><br>
+        <button onclick="start()">Comenzar</button>
+    </div>
+
+    <div id="game" style="display:none">
+        <p id="turn"></p>
+        <div id="board"></div>
+        <p id="status"></p>
+
+        <button id="btnUndo" onclick="undoMove()" disabled>⬅️ Deshacer</button>
+        <p id="timer">⏱ Tiempo: 0s</p>
+        <h3>Marcador</h3>
+        <p>
+            <span id="n1"></span>: <span id="s1">0</span> | Empates: <span id="draws">0</span> | <span id="n2"></span>: <span id="s2">0</span>
+        </p>
+        <table border="1" id="history" style="margin:auto">
+            <tr>
+                <th>#</th>
+                <th>Resultado</th>
+            </tr>
+        </table>
+        <br>
+        <button onclick="restart()">Reiniciar Partida</button>
+        <button onclick="confirmAction('reset')">Reiniciar Marcador</button>
+        <button onclick="confirmAction('new')">Nuevo Juego</button>
+        <button id="btnNames" onclick="openNameModal()">Cambiar Nombres</button>
+        <button onclick="openStats()">Ver Estadísticas</button>
+
+<div id="statsModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeStats()">×</span>
+    <h3>📊 Estadísticas de Jugadores</h3>
+    <p id="statsX"></p>
+    <p id="statsO"></p>
+    <p id="statsDraws"></p>
+  </div>
+</div>
+    </div>
+
+    <div id="firstTurnModal" class="modal">
+        <div class="modal-content">
+            <h3>Elija quién iniciará</h3>
+            <button onclick="setFirstTurn('X')">X</button>
+            <button onclick="setFirstTurn('O')">O</button>
+            <button onclick="setFirstTurn('R')">Aleatorio</button>
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">×</span>
+            <p id="modal-msg"></p>
+            <div id="modal-buttons"></div>
+        </div>
+    </div>
+
+    <div id="nameModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeNameModal()">×</span>
+            <h3>Cambiar nombres</h3>
+            <label>Jugador 1 (X): <input type="text" id="nameX"></label><br><br>
+            <label>Jugador 2 (O): <input type="text" id="nameO"></label>
+            <p id="nameError" style="color:red; font-size:0.9em;"></p>
+            <button onclick="saveNames()">Guardar</button>
+            <button onclick="closeNameModal()">Cancelar</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
