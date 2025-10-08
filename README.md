@@ -1,9 +1,11 @@
 # Tic Tac Toe - Integración Backend
 
 ## Integrantes:
-- [Tu nombre]
-- [Nombre compañero 2] 
-- [Nombre compañero 3]
+- Jean Piero 
+- Maycol Aldo
+- Tracy
+- Anghie 
+- Juan
 
 ## Nueva Funcionalidad:
 Integración con backend para gestionar perfiles de jugadores con Flask. Los jugadores pueden crear perfiles personalizados que guardan sus estadísticas, historial de partidas y preferencias de juego.
