@@ -8,7 +8,7 @@
 - Juan
 
 ## Nueva Funcionalidad:
-Integración con backend para gestionar perfiles de jugadores con Flask. Los jugadores pueden crear perfiles personalizados que guardan sus estadísticas, historial de partidas y preferencias de juego.
+Integración con backend Flask para gestión de perfiles de jugadores. Los usuarios pueden crear perfiles personalizados que almacenan estadísticas, historial de partidas, preferencias de colores y símbolos. El sistema guarda automáticamente los resultados de cada partida y permite gestionar múltiples perfiles de jugadores.
 
 ## Cómo instalar aplicativo:
 
@@ -27,3 +27,11 @@ Integración con backend para gestionar perfiles de jugadores con Flask. Los jug
    ```bash
    cd backend
    python app.py
+
+## Lista de Endpoints implementados:
+
+- `POST /perfiles` - Crear nuevo perfil de jugador
+- `GET /perfiles` - Listar todos los perfiles registrados
+- `GET /perfiles/{id}` - Obtener perfil específico por ID
+- `PUT /perfiles/{id}` - Actualizar perfil (estadísticas, historial, preferencias)
+- `DELETE /perfiles/{id}` - Eliminar perfil permanentemente

@@ -1,24 +1,3 @@
 {
-  "perfiles": [
-    {
-      "id": 1,
-      "nombre": "Jean Piero",
-      "nombre_perfil": "Wicala",
-      "tipo_perfil": "jugador",
-      "historial_partidas": [],
-      "estadisticas": {
-        "victorias": 0,
-        "empates": 0,
-        "derrotas": 0,
-        "partidas_jugadas": 0
-      },
-      "preferencias": {
-        "colorX": "#ff4d4d",
-        "colorO": "#4dff4d",
-        "symbolX": "X",
-        "symbolO": "O"
-      },
-      "fecha_creacion": "2025-10-08T00:20:01.234885"
-    }
-  ]
+  "perfiles": []
 }

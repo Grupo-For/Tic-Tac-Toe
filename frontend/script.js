@@ -15,6 +15,25 @@ let moveHistory = [];
 const win = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 const q = id => document.getElementById(id);
 
+async function listAllProfiles() {
+    try {
+        const response = await fetch(`${API_URL}/perfiles`);
+        const data = await response.json();
+        
+        if (data.perfiles && data.perfiles.length > 0) {
+            let profilesList = "Perfiles registrados:\n";
+            data.perfiles.forEach(profile => {
+                profilesList += `- ${profile.nombre_perfil} (${profile.nombre})\n`;
+            });
+            showModal(profilesList);
+        } else {
+            showModal("No hay perfiles registrados aÃºn.");
+        }
+    } catch (error) {
+        showModal("Error al cargar los perfiles: " + error.message);
+    }
+}
+
 // ---- Modal confirmaciones ----
 function showModal(msg, buttons=[]) {
   q("modal-msg").textContent = msg;
@@ -42,6 +61,87 @@ function confirmAction(action) {
       {text:"No", action: ()=>{}}
     ]);
   }
+}
+
+async function updateProfileStats(resultado) {
+    if (!currentProfile) return;
+
+    const stats = { ...currentProfile.estadisticas };
+    stats.partidas_jugadas++;
+    
+    if (resultado === 'victoria') {
+        stats.victorias++;
+    } else if (resultado === 'empate') {
+        stats.empates++;
+    } else {
+        stats.derrotas++;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/perfiles/${currentProfile.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                estadisticas: stats,
+                nueva_partida: {
+                    resultado: resultado,
+                    duracion: seconds,
+                    jugadores: { X: p.X, O: p.O },
+                    movimientos: moveHistory.length,
+                    fecha: new Date().toISOString()
+                },
+                preferencias: {
+                    colorX: q('colorX').value,
+                    colorO: q('colorO').value,
+                    symbolX: q('symbolX').value,
+                    symbolO: q('symbolO').value
+                }
+            })
+        });
+        
+        if (response.ok) {
+            // Actualizar perfil local con los nuevos datos
+            const updatedProfile = await response.json();
+            currentProfile = updatedProfile.perfil;
+            showProfileInfo(); // Actualizar la visualizaciÃ³n
+        }
+    } catch (error) {
+        console.error('Error al actualizar estadÃ­sticas:', error);
+    }
+}
+
+async function deleteCurrentProfile() {
+    if (!currentProfile) {
+        showModal("No hay perfil activo para eliminar");
+        return;
+    }
+    
+    showModal(`Â¿EstÃ¡s seguro de eliminar el perfil "${currentProfile.nombre_perfil}"? Esta acciÃ³n no se puede deshacer.`, [
+        {
+            text: "SÃ­, eliminar",
+            action: async () => {
+                try {
+                    const response = await fetch(`${API_URL}/perfiles/${currentProfile.id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        showModal("Perfil eliminado correctamente");
+                        logoutProfile();
+                    } else {
+                        const error = await response.json();
+                        showModal("Error al eliminar perfil: " + error.error);
+                    }
+                } catch (error) {
+                    showModal("Error de conexiÃ³n: " + error.message);
+                }
+            }
+        },
+        {
+            text: "Cancelar",
+            action: () => {}
+        }
+    ]);
 }
 
 // ---- Inicio del juego
@@ -626,14 +726,3 @@ async function updateProfileStats(resultado) {
 
 // Inicializar display del perfil
 updateProfileDisplay();
-/ /   M e j o r a :   F e e d b a c k   v i s u a l   -    
-  
- m i é r c o l e s ,   8   d e   o c t u b r e   d e   2 0 2 5   1 2 : 3 4 : 2 2   a .   m .  
-  
-  
- / /   G e s t i ó n   d e   s e s i o n e s   m e j o r a d a   -    
-  
- m i é r c o l e s ,   8   d e   o c t u b r e   d e   2 0 2 5   1 2 : 3 5 : 0 7   a .   m .  
-  
-  
- 
