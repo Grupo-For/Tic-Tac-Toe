@@ -145,3 +145,69 @@ button:disabled {
   background: #f4faff;
   border: 2px solid #0077cc;
 }
+<<<<<<< HEAD
+=======
+body.dark {
+    background: #1a1a1a;
+    color: white;
+}
+
+body.dark .modal-content {
+    background: #2d2d2d;
+    color: white;
+    border: 2px solid #444;
+}
+
+body.dark .cell {
+    background: #333;
+    border-color: #666;
+    color: white;
+}
+
+body.dark .cell:hover {
+    background: #444;
+}
+
+body.dark table,
+body.dark th,
+body.dark td {
+    border-color: #666;
+}
+
+body.dark #history tr:nth-child(even) {
+    background: #333;
+}
+
+body.dark #history tr:hover {
+    background: #444;
+}
+
+body.dark button {
+    background: #444;
+    color: white;
+    border: 1px solid #666;
+}
+
+body.dark input {
+    background: #333;
+    color: white;
+    border: 1px solid #666;
+}
+
+body.dark #statsModal .modal-content {
+    background: #2d2d2d;
+    border: 2px solid #0077cc;
+}
+
+#themeToggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+>>>>>>> Huamani-branch

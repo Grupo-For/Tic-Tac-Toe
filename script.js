@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+let darkMode = localStorage.getItem('darkMode') === 'true';
+>>>>>>> Huamani-branch
 let board = [], turn = "X";
 let p = {X: "J1", O: "J2"};
 let score = {X: 0, O: 0, D: 0};
@@ -8,6 +12,10 @@ let winningCells = []; // 🔥 nuevas casillas ganadoras
 let timerInterval, seconds = 0;
 let moveHistory = [];
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> Huamani-branch
 const win = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 const q = id => document.getElementById(id);
 
@@ -79,6 +87,16 @@ function start() {
   clearHistory();
   updateScore();
   restart();
+<<<<<<< HEAD
+=======
+  initTheme(); 
+}
+
+
+function initTheme() {
+    document.body.classList.toggle('dark', darkMode);
+    updateThemeButton();
+>>>>>>> Huamani-branch
 }
 
 function setFirstTurn(choice) {
@@ -366,3 +384,25 @@ function openStats() {
 function closeStats() {
   q("statsModal").style.display = "none";
 }
+<<<<<<< HEAD
+=======
+function toggleTheme() {
+    darkMode = !darkMode;
+    document.body.classList.toggle('dark', darkMode);
+    localStorage.setItem('darkMode', darkMode);
+    updateThemeButton();
+}
+
+function updateThemeButton() {
+    const btn = q('themeToggle');
+    if (darkMode) {
+        btn.textContent = '☀️ Modo Claro';
+        btn.style.background = '#333';
+        btn.style.color = 'white';
+    } else {
+        btn.textContent = '🌙 Modo Oscuro';
+        btn.style.background = '#f0f0f0';
+        btn.style.color = 'black';
+    }
+}
+>>>>>>> Huamani-branch
