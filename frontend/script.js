@@ -1,7 +1,6 @@
-<<<<<<< HEAD
-=======
+let currentProfile = null;
+const API_URL = 'http://localhost:5000';
 let darkMode = localStorage.getItem('darkMode') === 'true';
->>>>>>> Huamani-branch
 let board = [], turn = "X";
 let p = {X: "J1", O: "J2"};
 let score = {X: 0, O: 0, D: 0};
@@ -12,10 +11,7 @@ let winningCells = []; // 🔥 nuevas casillas ganadoras
 let timerInterval, seconds = 0;
 let moveHistory = [];
 
-<<<<<<< HEAD
-=======
 
->>>>>>> Huamani-branch
 const win = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 const q = id => document.getElementById(id);
 
@@ -87,8 +83,8 @@ function start() {
   clearHistory();
   updateScore();
   restart();
-<<<<<<< HEAD
-=======
+
+
   initTheme(); 
 }
 
@@ -96,7 +92,7 @@ function start() {
 function initTheme() {
     document.body.classList.toggle('dark', darkMode);
     updateThemeButton();
->>>>>>> Huamani-branch
+
 }
 
 function setFirstTurn(choice) {
@@ -384,8 +380,8 @@ function openStats() {
 function closeStats() {
   q("statsModal").style.display = "none";
 }
-<<<<<<< HEAD
-=======
+
+
 function toggleTheme() {
     darkMode = !darkMode;
     document.body.classList.toggle('dark', darkMode);
@@ -405,4 +401,228 @@ function updateThemeButton() {
         btn.style.color = 'black';
     }
 }
->>>>>>> Huamani-branch
+// ---- Funciones de Perfil ----
+function openProfileModal() {
+    q('profileModal').style.display = 'block';
+    if (currentProfile) {
+        showProfileInfo();
+    } else {
+        showLoginForm();
+    }
+}
+
+function closeProfileModal() {
+    q('profileModal').style.display = 'none';
+}
+
+function showLoginForm() {
+    q('profileLogin').style.display = 'block';
+    q('profileCreate').style.display = 'none';
+    q('profileInfo').style.display = 'none';
+    q('profileError').textContent = '';
+}
+
+function showCreateForm() {
+    q('profileLogin').style.display = 'none';
+    q('profileCreate').style.display = 'block';
+    q('profileInfo').style.display = 'none';
+    q('profileError').textContent = '';
+}
+
+function showProfileInfo() {
+    q('profileLogin').style.display = 'none';
+    q('profileCreate').style.display = 'none';
+    q('profileInfo').style.display = 'block';
+    q('profileError').textContent = '';
+    
+    if (currentProfile) {
+        q('profileDisplayName').textContent = currentProfile.nombre;
+        q('profileDisplayPerfil').textContent = currentProfile.nombre_perfil;
+        const stats = currentProfile.estadisticas;
+        q('profileStats').textContent = 
+            `Victorias: ${stats.victorias} | Empates: ${stats.empates} | Derrotas: ${stats.derrotas}`;
+    }
+}
+
+async function loginProfile() {
+    const profileName = q('loginName').value.trim();
+    if (!profileName) {
+        q('profileError').textContent = 'Ingresa tu nombre de perfil';
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/perfiles`);
+        const data = await response.json();
+        
+        const profile = data.perfiles.find(p => p.nombre_perfil === profileName);
+        if (profile) {
+            currentProfile = profile;
+            updateProfileDisplay();
+            showProfileInfo();
+            loadProfilePreferences();
+        } else {
+            q('profileError').textContent = 'Perfil no encontrado';
+        }
+    } catch (error) {
+        q('profileError').textContent = 'Error al conectar con el servidor';
+        console.error('Error:', error);
+    }
+}
+
+async function createProfile() {
+    const nombre = q('createNombre').value.trim();
+    const nombrePerfil = q('createPerfil').value.trim();
+    
+    if (!nombre || !nombrePerfil) {
+        q('profileError').textContent = 'Completa todos los campos';
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/perfiles`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                nombre: nombre,
+                nombre_perfil: nombrePerfil,
+                tipo_perfil: 'jugador'
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            currentProfile = data.perfil;
+            updateProfileDisplay();
+            showProfileInfo();
+            q('createNombre').value = '';
+            q('createPerfil').value = '';
+        } else {
+            const error = await response.json();
+            q('profileError').textContent = error.error || 'Error al crear perfil';
+        }
+    } catch (error) {
+        q('profileError').textContent = 'Error al conectar con el servidor';
+        console.error('Error:', error);
+    }
+}
+
+function logoutProfile() {
+    currentProfile = null;
+    updateProfileDisplay();
+    showLoginForm();
+}
+
+function updateProfileDisplay() {
+    const display = q('current-profile');
+    if (currentProfile) {
+        display.textContent = `Perfil: ${currentProfile.nombre_perfil}`;
+        display.style.color = 'green';
+        display.style.fontWeight = 'bold';
+    } else {
+        display.textContent = 'Sin perfil activo';
+        display.style.color = 'red';
+    }
+}
+
+function loadProfilePreferences() {
+    if (currentProfile && currentProfile.preferencias) {
+        const prefs = currentProfile.preferencias;
+        q('colorX').value = prefs.colorX || '#ff4d4d';
+        q('colorO').value = prefs.colorO || '#4dff4d';
+        q('symbolX').value = prefs.symbolX || 'X';
+        q('symbolO').value = prefs.symbolO || 'O';
+    }
+}
+
+// Modificar la función move para guardar estadísticas
+async function move(i) {
+    if (board[i]) {
+        showModal("Esa casilla ya está ocupada");
+        return;
+    }
+
+    q("btnNames").disabled = true;
+    saveMove(i, turn);
+
+    board[i] = turn;
+
+    let r = check();
+
+    if (r.over) {
+        stopTimer();
+        games++;
+        gameOver = true;
+
+        if (r.w) {
+            q("status").textContent = "Ganó " + p[r.w];
+            score[r.w]++;
+            winningCells = r.combo;
+            
+            // Guardar estadísticas en el perfil
+            if (currentProfile) {
+                await updateProfileStats(r.w === 'X' ? 'victoria' : 'derrota');
+            }
+            
+            addHistory("Ganó " + p[r.w], r.w);
+        } else {
+            q("status").textContent = "Empate";
+            score.D++;
+            winningCells = [];
+            
+            // Guardar estadísticas en el perfil
+            if (currentProfile) {
+                await updateProfileStats('empate');
+            }
+            
+            addHistory("Empate", null);
+        }
+
+        nextStarter = nextStarter === "X" ? "O" : "X";
+        q("btnNames").disabled = false;
+        updateScore();
+    } else {
+        turn = turn === "X" ? "O" : "X";
+    }
+
+    draw();
+}
+
+async function updateProfileStats(resultado) {
+    if (!currentProfile) return;
+
+    const stats = { ...currentProfile.estadisticas };
+    stats.partidas_jugadas++;
+    
+    if (resultado === 'victoria') {
+        stats.victorias++;
+    } else if (resultado === 'empate') {
+        stats.empates++;
+    } else {
+        stats.derrotas++;
+    }
+
+    try {
+        await fetch(`${API_URL}/perfiles/${currentProfile.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                estadisticas: stats,
+                nueva_partida: {
+                    resultado: resultado,
+                    duracion: seconds,
+                    jugadores: { X: p.X, O: p.O },
+                    movimientos: moveHistory.length
+                }
+            })
+        });
+        
+        // Actualizar perfil local
+        currentProfile.estadisticas = stats;
+    } catch (error) {
+        console.error('Error al actualizar estadísticas:', error);
+    }
+}
+
+// Inicializar display del perfil
+updateProfileDisplay();

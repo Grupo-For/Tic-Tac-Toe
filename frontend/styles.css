@@ -145,8 +145,8 @@ button:disabled {
   background: #f4faff;
   border: 2px solid #0077cc;
 }
-<<<<<<< HEAD
-=======
+
+
 body.dark {
     background: #1a1a1a;
     color: white;
@@ -210,4 +210,47 @@ body.dark #statsModal .modal-content {
     transition: all 0.3s ease;
     font-weight: bold;
 }
->>>>>>> Huamani-branch
+/* Estilos para sección de perfil */
+#profile-section {
+    background: rgba(255,255,255,0.1);
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+#profileModal input {
+    margin: 5px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 200px;
+}
+
+#profileModal button {
+    margin: 5px;
+    padding: 8px 16px;
+    background: #0077cc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#profileModal a {
+    color: #0077cc;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+#profileInfo {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+body.dark #profileInfo {
+    background: #333;
+    color: white;
+}
+
