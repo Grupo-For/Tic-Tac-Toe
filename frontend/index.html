@@ -7,6 +7,53 @@
 </head>
 <body class="start">
     <h1>Tic Tac Toe</h1>
+    <div id="profile-section" style="margin: 20px;">
+    <button onclick="openProfileModal()">👤 Gestionar Perfil</button>
+    <span id="current-profile" style="margin-left: 15px;"></span>
+</div>
+
+<!-- Modal de Perfil -->
+<div id="profileModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeProfileModal()">×</span>
+        <h3>👤 Gestión de Perfil</h3>
+        
+        <div id="profileLogin">
+            <h4>Iniciar Sesión</h4>
+            <input type="text" id="loginName" placeholder="Nombre de perfil">
+            <button onclick="loginProfile()">Entrar</button>
+            <p>¿No tienes perfil? <a href="#" onclick="showCreateForm()">Crear uno nuevo</a></p>
+        </div>
+        
+        <div id="profileCreate" style="display:none">
+            <h4>Crear Perfil</h4>
+            <input type="text" id="createNombre" placeholder="Nombre real">
+            <input type="text" id="createPerfil" placeholder="Nombre de perfil">
+            <button onclick="createProfile()">Crear Perfil</button>
+            <p>¿Ya tienes perfil? <a href="#" onclick="showLoginForm()">Iniciar sesión</a></p>
+        </div>
+        
+        <div id="profileInfo" style="display:none">
+            <h4>Mi Perfil</h4>
+            <p><strong>Nombre:</strong> <span id="profileDisplayName"></span></p>
+            <p><strong>Perfil:</strong> <span id="profileDisplayPerfil"></span></p>
+            <p><strong>Estadísticas:</strong> 
+                <span id="profileStats">Victorias: 0 | Empates: 0 | Derrotas: 0</span>
+            </p>
+            <div style="margin-top: 15px;">
+        <button onclick="listAllProfiles()">📋 Ver Todos los Perfiles</button>
+        <button onclick="deleteCurrentProfile()" style="background: #ff4444; color: white;">🗑️ Eliminar Este Perfil</button>
+        </div>
+            <button onclick="logoutProfile()">Cerrar Sesión</button>
+        </div>
+        
+        <p id="profileError" style="color:red;"></p>
+    </div>
+</div>
+
+
+    <button id="themeToggle" onclick="toggleTheme()">🌙 Modo Oscuro</button>
+
 
     <div id="register">
         <input id="p1" placeholder="Jugador 1 (X)">
@@ -25,9 +72,9 @@
         <p id="turn"></p>
         <div id="board"></div>
         <p id="status"></p>
+
+        <button id="btnUndo" onclick="undoMove()" disabled>⬅️ Deshacer</button>
         <p id="timer">⏱ Tiempo: 0s</p>
-
-
         <h3>Marcador</h3>
         <p>
             <span id="n1"></span>: <span id="s1">0</span> | Empates: <span id="draws">0</span> | <span id="n2"></span>: <span id="s2">0</span>
@@ -43,6 +90,17 @@
         <button onclick="confirmAction('reset')">Reiniciar Marcador</button>
         <button onclick="confirmAction('new')">Nuevo Juego</button>
         <button id="btnNames" onclick="openNameModal()">Cambiar Nombres</button>
+        <button onclick="openStats()">Ver Estadísticas</button>
+
+<div id="statsModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeStats()">×</span>
+    <h3>📊 Estadísticas de Jugadores</h3>
+    <p id="statsX"></p>
+    <p id="statsO"></p>
+    <p id="statsDraws"></p>
+  </div>
+</div>
     </div>
 
     <div id="firstTurnModal" class="modal">
