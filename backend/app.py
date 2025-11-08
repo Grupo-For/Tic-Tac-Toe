@@ -7,7 +7,7 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 
-DATA_FILE = 'perfiles.json'
+DATA_FILE = os.path.join(os.path.dirname(__file__), 'perfiles.json')
 
 def load_data():
     if os.path.exists(DATA_FILE):

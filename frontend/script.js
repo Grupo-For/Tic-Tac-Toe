@@ -63,53 +63,6 @@ function confirmAction(action) {
   }
 }
 
-async function updateProfileStats(resultado) {
-    if (!currentProfile) return;
-
-    const stats = { ...currentProfile.estadisticas };
-    stats.partidas_jugadas++;
-    
-    if (resultado === 'victoria') {
-        stats.victorias++;
-    } else if (resultado === 'empate') {
-        stats.empates++;
-    } else {
-        stats.derrotas++;
-    }
-
-    try {
-        const response = await fetch(`${API_URL}/perfiles/${currentProfile.id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                estadisticas: stats,
-                nueva_partida: {
-                    resultado: resultado,
-                    duracion: seconds,
-                    jugadores: { X: p.X, O: p.O },
-                    movimientos: moveHistory.length,
-                    fecha: new Date().toISOString()
-                },
-                preferencias: {
-                    colorX: q('colorX').value,
-                    colorO: q('colorO').value,
-                    symbolX: q('symbolX').value,
-                    symbolO: q('symbolO').value
-                }
-            })
-        });
-        
-        if (response.ok) {
-            // Actualizar perfil local con los nuevos datos
-            const updatedProfile = await response.json();
-            currentProfile = updatedProfile.perfil;
-            showProfileInfo(); // Actualizar la visualización
-        }
-    } catch (error) {
-        console.error('Error al actualizar estadísticas:', error);
-    }
-}
-
 async function deleteCurrentProfile() {
     if (!currentProfile) {
         showModal("No hay perfil activo para eliminar");
@@ -239,48 +192,6 @@ function draw() {
     q("turn").textContent = "";
   }
   updateUndoButton();
-}
-
-
-
-function move(i) {
-  if (board[i]) {
-    showModal("Esa casilla ya está ocupada");
-    return;
-  }
-
-  q("btnNames").disabled = true;
-  saveMove(i, turn);
-
-  board[i] = turn;
-
-  let r = check();
-
-  if (r.over) {
-    stopTimer();
-    games++;
-    gameOver = true;
-
-    if (r.w) {
-      q("status").textContent = "Ganó " + p[r.w];
-      score[r.w]++;
-      winningCells = r.combo; // 🔥 guardar casillas ganadoras
-      addHistory("Ganó " + p[r.w], r.w);
-    } else {
-      q("status").textContent = "Empate";
-      score.D++;
-      winningCells = []; // empate → no hay casillas
-      addHistory("Empate", null);
-    }
-
-    nextStarter = nextStarter === "X" ? "O" : "X";
-    q("btnNames").disabled = false;
-    updateScore();
-  } else {
-    turn = turn === "X" ? "O" : "X";
-  }
-
-  draw();
 }
 
 function check() {
@@ -635,93 +546,119 @@ function loadProfilePreferences() {
     }
 }
 
-// Modificar la función move para guardar estadísticas
 async function move(i) {
-    if (board[i]) {
-        showModal("Esa casilla ya está ocupada");
-        return;
-    }
+  if (board[i]) {
+    showModal("Esa casilla ya está ocupada");
+    return;
+  }
 
-    q("btnNames").disabled = true;
-    saveMove(i, turn);
+  q("btnNames").disabled = true;
+  saveMove(i, turn);
 
-    board[i] = turn;
+  board[i] = turn;
 
-    let r = check();
+  let r = check();
 
-    if (r.over) {
-        stopTimer();
-        games++;
-        gameOver = true;
+  if (r.over) {
+    stopTimer();
+    games++;
+    gameOver = true;
 
-        if (r.w) {
-            q("status").textContent = "Ganó " + p[r.w];
-            score[r.w]++;
-            winningCells = r.combo;
-            
-            // Guardar estadísticas en el perfil
-            if (currentProfile) {
-                await updateProfileStats(r.w === 'X' ? 'victoria' : 'derrota');
-            }
-            
-            addHistory("Ganó " + p[r.w], r.w);
-        } else {
-            q("status").textContent = "Empate";
-            score.D++;
-            winningCells = [];
-            
-            // Guardar estadísticas en el perfil
-            if (currentProfile) {
-                await updateProfileStats('empate');
-            }
-            
-            addHistory("Empate", null);
-        }
+    if (r.w) {
+      q("status").textContent = "Ganó " + p[r.w];
+      score[r.w]++;
+      winningCells = r.combo;
+      addHistory("Ganó " + p[r.w], r.w);
 
-        nextStarter = nextStarter === "X" ? "O" : "X";
-        q("btnNames").disabled = false;
-        updateScore();
+      // Si hay perfil activo, asumimos que es el Jugador 1 (X)
+      if (currentProfile) {
+        const resultado = (r.w === "X") ? 'victoria' : 'derrota';
+        try { await updateProfileStats(resultado); } catch (e) { console.error(e); }
+      }
+
     } else {
-        turn = turn === "X" ? "O" : "X";
+      q("status").textContent = "Empate";
+      score.D++;
+      winningCells = [];
+      addHistory("Empate", null);
+
+      if (currentProfile) {
+        try { await updateProfileStats('empate'); } catch (e) { console.error(e); }
+      }
     }
 
-    draw();
+    nextStarter = nextStarter === "X" ? "O" : "X";
+    q("btnNames").disabled = false;
+    updateScore();
+  } else {
+    turn = turn === "X" ? "O" : "X";
+  }
+
+  draw();
 }
 
 async function updateProfileStats(resultado) {
-    if (!currentProfile) return;
+  if (!currentProfile) return;
 
-    const stats = { ...currentProfile.estadisticas };
-    stats.partidas_jugadas++;
-    
-    if (resultado === 'victoria') {
-        stats.victorias++;
-    } else if (resultado === 'empate') {
-        stats.empates++;
-    } else {
-        stats.derrotas++;
+  // Asegurarnos de que exista la estructura de estadísticas
+  if (!currentProfile.estadisticas || typeof currentProfile.estadisticas !== 'object') {
+    currentProfile.estadisticas = { victorias: 0, empates: 0, derrotas: 0, partidas_jugadas: 0 };
+  }
+
+  const stats = { ...currentProfile.estadisticas };
+  stats.partidas_jugadas = (stats.partidas_jugadas || 0) + 1;
+
+  if (resultado === 'victoria') stats.victorias = (stats.victorias || 0) + 1;
+  else if (resultado === 'empate') stats.empates = (stats.empates || 0) + 1;
+  else if (resultado === 'derrota') stats.derrotas = (stats.derrotas || 0) + 1;
+
+  const payload = {
+    estadisticas: stats,
+    nueva_partida: {
+      resultado: resultado,
+      duracion: seconds,
+      jugadores: { X: p.X, O: p.O },
+      movimientos: moveHistory.length,
+      fecha: new Date().toISOString()
+    },
+    preferencias: {
+      colorX: q('colorX') ? q('colorX').value : undefined,
+      colorO: q('colorO') ? q('colorO').value : undefined,
+      symbolX: q('symbolX') ? q('symbolX').value : undefined,
+      symbolO: q('symbolO') ? q('symbolO').value : undefined
     }
+  };
 
-    try {
-        await fetch(`${API_URL}/perfiles/${currentProfile.id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                estadisticas: stats,
-                nueva_partida: {
-                    resultado: resultado,
-                    duracion: seconds,
-                    jugadores: { X: p.X, O: p.O },
-                    movimientos: moveHistory.length
-                }
-            })
-        });
-        
-        // Actualizar perfil local
+  try {
+    const response = await fetch(`${API_URL}/perfiles/${currentProfile.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.perfil) {
+        currentProfile = data.perfil;
+      } else {
         currentProfile.estadisticas = stats;
-    } catch (error) {
-        console.error('Error al actualizar estadísticas:', error);
+      }
+      showProfileInfo();
+      updateProfileDisplay();
+    } else {
+      // conservar cambios locales si falla
+      try {
+        const err = await response.json();
+        console.error('Error al actualizar perfil en servidor:', err);
+      } catch (e2) {
+        console.error('Error al actualizar perfil (sin JSON):', e2);
+      }
+      currentProfile.estadisticas = stats;
     }
+  } catch (error) {
+    console.error('Error de conexión al actualizar estadísticas:', error);
+    currentProfile.estadisticas = stats;
+  }
 }
 
 // Inicializar display del perfil
