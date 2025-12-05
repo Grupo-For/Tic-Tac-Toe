@@ -361,7 +361,13 @@ pip install -r requirements.txt --force-reinstall
 ## 👥 Autor
 
 **Universidad Continental - Construcción de Software**
-- Semana 10: Kata TDD
 - Docente: Mg. Roberto Zárate Mendoza
+- Estudiantes:
+      Huamaní Rodriguez Jean Piero
+      Porras Torres Anghelina 
+      Ramirez Soto Juan Diego
+      Tovar Arias Michael Aldo
+      Vila Quispe Tracy Anahi
+
 
 ---
