@@ -2,136 +2,321 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Tic Tac Toe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Juego clásico de Tic Tac Toe con gestión de perfiles y estadísticas">
+    <title>Tic Tac Toe - Juego Profesional</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="start">
-    <h1>Tic Tac Toe</h1>
-    <div id="profile-section" style="margin: 20px;">
-    <button onclick="openProfileModal()">👤 Gestionar Perfil</button>
-    <span id="current-profile" style="margin-left: 15px;"></span>
-</div>
+<body>
+    <!-- Header -->
+    <header class="header" role="banner">
+        <h1>🎮 Tic Tac Toe</h1>
+        <p>Juego clásico con gestión de perfiles</p>
+    </header>
 
-<!-- Modal de Perfil -->
-<div id="profileModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeProfileModal()">×</span>
-        <h3>👤 Gestión de Perfil</h3>
-        
-        <div id="profileLogin">
-            <h4>Iniciar Sesión</h4>
-            <input type="text" id="loginName" placeholder="Nombre de perfil">
-            <button onclick="loginProfile()">Entrar</button>
-            <p>¿No tienes perfil? <a href="#" onclick="showCreateForm()">Crear uno nuevo</a></p>
+    <!-- Theme Toggle -->
+    <button id="themeToggle" class="btn btn-secondary" onclick="toggleTheme()" aria-label="Cambiar modo de color">
+        🌙 Modo Oscuro
+    </button>
+
+    <main class="container" role="main">
+        <!-- Profile Section -->
+        <section class="profile-section" aria-labelledby="profile-heading">
+            <h2 id="profile-heading" class="sr-only">Gestión de Perfil</h2>
+            <button class="btn btn-primary" onclick="openProfileModal()" aria-haspopup="dialog">
+                👤 Gestionar Perfil
+            </button>
+            <span id="current-profile" class="profile-status profile-inactive" aria-live="polite">
+                Sin perfil activo
+            </span>
+        </section>
+
+        <!-- Register Section -->
+        <section id="register" aria-labelledby="config-heading">
+            <div class="card">
+                <h2 id="config-heading" class="card-title">⚙️ Configuración del Juego</h2>
+                
+                <form id="game-config" onsubmit="event.preventDefault(); start();">
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div>
+                                <label for="p1">Jugador 1 (X)</label>
+                                <input type="text" id="p1" placeholder="Nombre jugador 1" required>
+                            </div>
+                            <div>
+                                <label for="p2">Jugador 2 (O)</label>
+                                <input type="text" id="p2" placeholder="Nombre jugador 2" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div>
+                                <label for="colorX">🎨 Color Jugador 1</label>
+                                <input type="color" id="colorX" value="#e94560" aria-describedby="colorX-desc">
+                                <span id="colorX-desc" class="sr-only">Selecciona el color para el jugador 1</span>
+                            </div>
+                            <div>
+                                <label for="colorO">🎨 Color Jugador 2</label>
+                                <input type="color" id="colorO" value="#2ed573" aria-describedby="colorO-desc">
+                                <span id="colorO-desc" class="sr-only">Selecciona el color para el jugador 2</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div>
+                                <label for="symbolX">✏️ Símbolo Jugador 1</label>
+                                <input type="text" id="symbolX" placeholder="X" maxlength="3" required>
+                            </div>
+                            <div>
+                                <label for="symbolO">✏️ Símbolo Jugador 2</label>
+                                <input type="text" id="symbolO" placeholder="O" maxlength="3" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+                        🚀 Comenzar Juego
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Game Section -->
+        <section id="game" aria-labelledby="game-heading" hidden>
+            <h2 id="game-heading" class="sr-only">Juego en curso</h2>
+            <div class="game-layout">
+                <!-- Main Game Area -->
+                <div class="game-main">
+                    <div class="turn-indicator" id="turn" aria-live="polite">
+                        Turno: Jugador 1 (X)
+                    </div>
+                    
+                    <div id="board" role="grid" aria-label="Tablero de juego"></div>
+                    
+                    <p id="status" aria-live="assertive"></p>
+                    <p id="timer" aria-live="polite">⏱️ Tiempo: 0s</p>
+
+                    <button id="btnUndo" class="btn" onclick="undoMove()" disabled aria-label="Deshacer movimiento">
+                        ⬅️ Deshacer
+                    </button>
+
+                    <div class="game-controls">
+                        <button class="btn btn-secondary" onclick="restart()">
+                            🔄 Reiniciar Partida
+                        </button>
+                        <button class="btn btn-secondary" onclick="confirmAction('reset')">
+                            📊 Reiniciar Marcador
+                        </button>
+                        <button class="btn btn-secondary" onclick="confirmAction('new')">
+                            🆕 Nuevo Juego
+                        </button>
+                        <button class="btn btn-secondary" id="btnNames" onclick="openNameModal()">
+                            ✏️ Cambiar Nombres
+                        </button>
+                        <button class="btn btn-secondary" onclick="openStats()">
+                            📈 Ver Estadísticas
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <aside class="sidebar" aria-labelledby="sidebar-heading">
+                    <h3 id="sidebar-heading" class="sr-only">Información del juego</h3>
+                    
+                    <!-- Scoreboard -->
+                    <div class="card scoreboard">
+                        <h3 class="card-title">🏆 Marcador</h3>
+                        <div class="score-display">
+                            <div class="score-item">
+                                <div class="name" id="n1">J1</div>
+                                <div class="value" id="s1">0</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="name">Empates</div>
+                                <div class="value" id="draws">0</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="name" id="n2">J2</div>
+                                <div class="value" id="s2">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- History -->
+                    <div class="card">
+                        <h3 class="card-title">📜 Historial</h3>
+                        <div class="table-container">
+                            <table id="history">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Resultado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Las filas se agregarán dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </section>
+    </main>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal" role="dialog" aria-labelledby="profile-modal-title" aria-hidden="true">
+        <div class="modal-content">
+            <button class="close" onclick="closeProfileModal()" aria-label="Cerrar modal">×</button>
+            <h3 id="profile-modal-title">👤 Gestión de Perfil</h3>
+            
+            <div id="profileLogin">
+                <div class="form-group">
+                    <label for="loginName">Nombre de perfil</label>
+                    <input type="text" id="loginName" placeholder="Ingresa tu nombre de perfil" required>
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="loginProfile()">
+                    Iniciar Sesión
+                </button>
+                <p style="text-align: center; margin-top: 15px; color: #8892b0;">
+                    ¿No tienes perfil? 
+                    <button type="button" class="link" onclick="showCreateForm()">Crear uno nuevo</button>
+                </p>
+            </div>
+            
+            <div id="profileCreate" hidden>
+                <div class="form-group">
+                    <label for="createNombre">Nombre real</label>
+                    <input type="text" id="createNombre" placeholder="Tu nombre completo" required>
+                </div>
+                <div class="form-group">
+                    <label for="createPerfil">Nombre de perfil</label>
+                    <input type="text" id="createPerfil" placeholder="Tu nombre de usuario" required>
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="createProfile()">
+                    Crear Perfil
+                </button>
+                <p style="text-align: center; margin-top: 15px; color: #8892b0;">
+                    ¿Ya tienes perfil? 
+                    <button type="button" class="link" onclick="showLoginForm()">Iniciar sesión</button>
+                </p>
+            </div>
+            
+            <div id="profileInfo" hidden>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Nombre:</span>
+                    <span class="profile-info-value" id="profileDisplayName"></span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Perfil:</span>
+                    <span class="profile-info-value" id="profileDisplayPerfil"></span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Estadísticas:</span>
+                    <span class="profile-info-value" id="profileStats">V: 0 | E: 0 | D: 0</span>
+                </div>
+                
+                <div class="profile-actions">
+                    <button class="btn btn-secondary" onclick="listAllProfiles()">
+                        📋 Ver Todos los Perfiles
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteCurrentProfile()">
+                        🗑️ Eliminar Perfil
+                    </button>
+                    <button class="btn btn-secondary" onclick="logoutProfile()">
+                        🚪 Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+            
+            <p id="profileError" class="error-message" aria-live="assertive"></p>
         </div>
-        
-        <div id="profileCreate" style="display:none">
-            <h4>Crear Perfil</h4>
-            <input type="text" id="createNombre" placeholder="Nombre real">
-            <input type="text" id="createPerfil" placeholder="Nombre de perfil">
-            <button onclick="createProfile()">Crear Perfil</button>
-            <p>¿Ya tienes perfil? <a href="#" onclick="showLoginForm()">Iniciar sesión</a></p>
-        </div>
-        
-        <div id="profileInfo" style="display:none">
-            <h4>Mi Perfil</h4>
-            <p><strong>Nombre:</strong> <span id="profileDisplayName"></span></p>
-            <p><strong>Perfil:</strong> <span id="profileDisplayPerfil"></span></p>
-            <p><strong>Estadísticas:</strong> 
-                <span id="profileStats">Victorias: 0 | Empates: 0 | Derrotas: 0</span>
+    </div>
+
+    <!-- First Turn Modal -->
+    <div id="firstTurnModal" class="modal" role="dialog" aria-labelledby="first-turn-title" aria-hidden="true">
+        <div class="modal-content">
+            <h3 id="first-turn-title">🎯 ¿Quién inicia?</h3>
+            <p style="text-align: center; color: #8892b0; margin-bottom: 20px;">
+                Selecciona quién hará el primer movimiento
             </p>
-            <div style="margin-top: 15px;">
-        <button onclick="listAllProfiles()">📋 Ver Todos los Perfiles</button>
-        <button onclick="deleteCurrentProfile()" style="background: #ff4444; color: white;">🗑️ Eliminar Este Perfil</button>
+            <div class="turn-options">
+                <button class="btn btn-primary" onclick="setFirstTurn('X')">
+                    ❌ X
+                </button>
+                <button class="btn btn-primary" onclick="setFirstTurn('O')">
+                    ⭕ O
+                </button>
+                <button class="btn btn-secondary" onclick="setFirstTurn('R')">
+                    🎲 Aleatorio
+                </button>
+            </div>
         </div>
-            <button onclick="logoutProfile()">Cerrar Sesión</button>
-        </div>
-        
-        <p id="profileError" style="color:red;"></p>
-    </div>
-</div>
-
-
-    <button id="themeToggle" onclick="toggleTheme()">🌙 Modo Oscuro</button>
-
-
-    <div id="register">
-        <input id="p1" placeholder="Jugador 1 (X)">
-        <input id="p2" placeholder="Jugador 2 (O)">
-        <br><br>
-        <label>Color Jugador 1 (X): <input type="color" id="colorX" value="#ff4d4d"></label>
-        <label>Color Jugador 2 (O): <input type="color" id="colorO" value="#4dff4d"></label>
-        <br><br>
-        <label>Símbolo Jugador 1 (X): <input type="text" id="symbolX" placeholder="X"></label>
-        <label>Símbolo Jugador 2 (O): <input type="text" id="symbolO" placeholder="O"></label>
-        <br><br>
-        <button onclick="start()">Comenzar</button>
     </div>
 
-    <div id="game" style="display:none">
-        <p id="turn"></p>
-        <div id="board"></div>
-        <p id="status"></p>
-
-        <button id="btnUndo" onclick="undoMove()" disabled>⬅️ Deshacer</button>
-        <p id="timer">⏱ Tiempo: 0s</p>
-        <h3>Marcador</h3>
-        <p>
-            <span id="n1"></span>: <span id="s1">0</span> | Empates: <span id="draws">0</span> | <span id="n2"></span>: <span id="s2">0</span>
-        </p>
-        <table border="1" id="history" style="margin:auto">
-            <tr>
-                <th>#</th>
-                <th>Resultado</th>
-            </tr>
-        </table>
-        <br>
-        <button onclick="restart()">Reiniciar Partida</button>
-        <button onclick="confirmAction('reset')">Reiniciar Marcador</button>
-        <button onclick="confirmAction('new')">Nuevo Juego</button>
-        <button id="btnNames" onclick="openNameModal()">Cambiar Nombres</button>
-        <button onclick="openStats()">Ver Estadísticas</button>
-
-<div id="statsModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeStats()">×</span>
-    <h3>📊 Estadísticas de Jugadores</h3>
-    <p id="statsX"></p>
-    <p id="statsO"></p>
-    <p id="statsDraws"></p>
-  </div>
-</div>
-    </div>
-
-    <div id="firstTurnModal" class="modal">
+    <!-- Generic Modal -->
+    <div id="modal" class="modal" role="dialog" aria-labelledby="modal-msg" aria-hidden="true">
         <div class="modal-content">
-            <h3>Elija quién iniciará</h3>
-            <button onclick="setFirstTurn('X')">X</button>
-            <button onclick="setFirstTurn('O')">O</button>
-            <button onclick="setFirstTurn('R')">Aleatorio</button>
+            <button class="close" onclick="closeModal()" aria-label="Cerrar modal">×</button>
+            <p id="modal-msg" style="text-align: center; font-size: 1.1rem;"></p>
+            <div id="modal-buttons" style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;"></div>
         </div>
     </div>
 
-    <div id="modal" class="modal">
+    <!-- Name Modal -->
+    <div id="nameModal" class="modal" role="dialog" aria-labelledby="name-modal-title" aria-hidden="true">
         <div class="modal-content">
-            <span class="close" onclick="closeModal()">×</span>
-            <p id="modal-msg"></p>
-            <div id="modal-buttons"></div>
+            <button class="close" onclick="closeNameModal()" aria-label="Cerrar modal">×</button>
+            <h3 id="name-modal-title">✏️ Cambiar Nombres</h3>
+            <div class="form-group">
+                <label for="nameX">Jugador 1 (X)</label>
+                <input type="text" id="nameX" required>
+            </div>
+            <div class="form-group">
+                <label for="nameO">Jugador 2 (O)</label>
+                <input type="text" id="nameO" required>
+            </div>
+            <p id="nameError" class="error-message" aria-live="assertive"></p>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-primary" style="flex: 1;" onclick="saveNames()">
+                    Guardar
+                </button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeNameModal()">
+                    Cancelar
+                </button>
+            </div>
         </div>
     </div>
 
-    <div id="nameModal" class="modal">
+    <!-- Stats Modal -->
+    <div id="statsModal" class="modal" role="dialog" aria-labelledby="stats-modal-title" aria-hidden="true">
         <div class="modal-content">
-            <span class="close" onclick="closeNameModal()">×</span>
-            <h3>Cambiar nombres</h3>
-            <label>Jugador 1 (X): <input type="text" id="nameX"></label><br><br>
-            <label>Jugador 2 (O): <input type="text" id="nameO"></label>
-            <p id="nameError" style="color:red; font-size:0.9em;"></p>
-            <button onclick="saveNames()">Guardar</button>
-            <button onclick="closeNameModal()">Cancelar</button>
+            <button class="close" onclick="closeStats()" aria-label="Cerrar modal">×</button>
+            <h3 id="stats-modal-title">📊 Estadísticas de Jugadores</h3>
+            <div class="stats-item" id="statsX"></div>
+            <div class="stats-item" id="statsO"></div>
+            <div class="stats-item" id="statsDraws"></div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <p>Tic Tac Toe - Universidad Continental - Construcción de Software</p>
+    </footer>
+
+    <script src="scripts/config.js"></script>
+    <script src="scripts/modal.js"></script>
+    <script src="scripts/validation.js"></script>
+    <script src="scripts/timer.js"></script>
+    <script src="scripts/history.js"></script>
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/profile.js"></script>
+    <script src="scripts/game.js"></script>
+    <script src="scripts/init.js"></script>
 </body>
 </html>
